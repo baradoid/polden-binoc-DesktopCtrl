@@ -73,7 +73,7 @@ void MainWindow::on_pushButtonComOpen_clicked()
 //                         this, SLOT(handleSerialDataWritten(qint64)));
                  ui->pushButtonComOpen->setText("close");
                  //emit showStatusBarMessage("connected", 3000);
-                 ui->statusBar->showMessage("connected", 3000);
+                 ui->statusBar->showMessage("connected", 2000);
              }
          }
      }
@@ -83,6 +83,7 @@ void MainWindow::on_pushButtonComOpen_clicked()
          qDebug("port closed");
          ui->pushButtonComOpen->setText("open");
          //contrStringQueue.clear();
+         ui->statusBar->showMessage("disconnected", 2000);
      }
 }
 
