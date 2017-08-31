@@ -2,14 +2,58 @@
 #include "ui_mainwindow.h"
 #include <QtSerialPort/QSerialPortInfo>
 #include <QDebug>
+#include <QtCharts/QChart>
+#include <QtCharts/QChartView>
+#include <QtCharts/QAbstractAxis>
+#include <QtCharts/QSplineSeries>
+#include <QtCharts/QValueAxis>
+
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_series(0),
+    m_axis(new QValueAxis),
+    m_step(0),
+    m_x(0),
+    m_y(1)
 {
     ui->setupUi(this);
     connect(this, SIGNAL(showStatusBarMessage(QString,int)),
             ui->statusBar, SLOT(showMessage(QString,int)));
+
+    chart = new QChart();
+    m_series = new QLineSeries(this);
+    QPen green(Qt::red);
+    green.setWidth(1);
+    m_series->setPen(green);
+    m_series->append(m_x, m_y);
+
+    chart->addSeries(m_series);
+    chart->createDefaultAxes();
+    chart->setAxisX(m_axis, m_series);
+    m_axis->setTickCount(10);
+    //chart->axisX()->setRange(-100, 5);
+    chart->axisX()->setRange(0, 8191);
+    chart->axisY()->setRange(-10, 10000);
+
+    chart->setTitle("xPos yPos");
+    //chart->setAnimationOptions(QChart::AllAnimations);
+    //chart->legend()->hide();
+
+
+    QChartView chartView(chart);
+    chartView.setRenderHint(QPainter::Antialiasing);
+    //ui->widgetChart->
+    //ui->widgetChart->set
+    ui->widgetChartView->setChart(chart);
+    ui->widgetChartView->setRenderHint(QPainter::Antialiasing);
+
+    QObject::connect(&m_timer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
+    m_timer.setInterval(10);
+    m_timer.start();
+
 }
 
 MainWindow::~MainWindow()
@@ -90,4 +134,29 @@ void MainWindow::on_pushButtonComOpen_clicked()
 void MainWindow::handleReadyRead()
 {
     QByteArray str = serial.readAll();
+}
+
+void MainWindow::handleTimeout()
+{
+    qreal x = chart->plotArea().width() / m_axis->tickCount();
+    m_x +=  1; //(m_axis->max() - m_axis->min()) / m_axis->tickCount();
+    m_y +=10;//qrand() % 8191 - 2.5;
+    if(m_y > 8191)
+        m_y = 0;
+    //if(m_x > 1000){
+
+      //  chart->scroll(1, 0);
+    //}
+    //else{
+    qreal lowXrange = ((m_x-500) < 0)? 0 : (m_x-500);
+        chart->axisX()->setRange(lowXrange, m_x+100);
+        qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
+    //}
+    m_series->append(m_x, m_y);
+    //chart->scroll(x/10, 0);
+    //ui->widgetChartView->repaint();
+
+
+    //if (m_x == 100)
+    //    m_timer.stop();
 }
