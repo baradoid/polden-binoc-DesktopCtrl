@@ -5,6 +5,7 @@
 #include <QSerialPort>
 #include <QtCore/QTimer>
 #include <QtCharts/QChart>
+#include <QTime>
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,7 @@ private slots:
     void on_pushButtonComOpen_clicked();
     void handleReadyRead();
     void handleTimeout();
+    void uiUpdate();
 signals:
     void showStatusBarMessage(const QString &message, int timeout = 0);
 
@@ -41,7 +43,7 @@ private:
     Ui::MainWindow *ui;
     QSerialPort serial;
 
-    QTimer m_timer;
+    QTimer m_timer, uiUpdateTimer;
     QChart *chart;
     QLineSeries *m_series;
     QStringList m_titles;
@@ -49,6 +51,12 @@ private:
     qreal m_step;
     qreal m_x;
     qreal m_y;
+    qreal max;
+    void processStr(QString str);
+    QString recvStr;
+    void appendPosToGraph(int pt);
+    QTime startRecvTime;
+    int recvdComPacks;
 };
 
 #endif // MAINWINDOW_H

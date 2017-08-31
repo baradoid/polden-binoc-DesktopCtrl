@@ -7,6 +7,7 @@
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QSplineSeries>
 #include <QtCharts/QValueAxis>
+#include <QTime>
 
 
 
@@ -17,7 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_axis(new QValueAxis),
     m_step(0),
     m_x(0),
-    m_y(1)
+    m_y(1),
+    max(0),
+    recvdComPacks(0)
 {
     ui->setupUi(this);
     connect(this, SIGNAL(showStatusBarMessage(QString,int)),
@@ -43,16 +46,19 @@ MainWindow::MainWindow(QWidget *parent) :
     //chart->legend()->hide();
 
 
-    QChartView chartView(chart);
-    chartView.setRenderHint(QPainter::Antialiasing);
+    //QChartView chartView(chart);
+    //chartView.setRenderHint(QPainter::Antialiasing);
     //ui->widgetChart->
     //ui->widgetChart->set
     ui->widgetChartView->setChart(chart);
-    ui->widgetChartView->setRenderHint(QPainter::Antialiasing);
+    ui->widgetChartView->setRenderHint(QPainter::NonCosmeticDefaultPen);
 
-    QObject::connect(&m_timer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
-    m_timer.setInterval(10);
-    m_timer.start();
+    //QObject::connect(&m_timer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
+    //m_timer.setInterval(10);
+    //m_timer.start();
+    uiUpdateTimer.setInterval(50);
+    QObject::connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(uiUpdate()));
+    uiUpdateTimer.start();
 
 }
 
@@ -118,6 +124,8 @@ void MainWindow::on_pushButtonComOpen_clicked()
                  ui->pushButtonComOpen->setText("close");
                  //emit showStatusBarMessage("connected", 3000);
                  ui->statusBar->showMessage("connected", 2000);
+                 recvdComPacks = 0;
+                 startRecvTime = QTime::currentTime();
              }
          }
      }
@@ -131,10 +139,74 @@ void MainWindow::on_pushButtonComOpen_clicked()
      }
 }
 
+void MainWindow::processStr(QString str)
+{
+    //qDebug() << str.length() <<":" <<str;
+    if(str.length() != 41){
+        qDebug() << "string length " << str.length() << "not equal 41";
+    }
+    QStringList strList = str.split(" ");
+    int xPos = strList[0].toInt(Q_NULLPTR, 16);
+    //qDebug() << xPos;
+
+    appendPosToGraph(xPos);
+
+}
+
 void MainWindow::handleReadyRead()
 {
-    QByteArray str = serial.readAll();
+    recvdComPacks++;
+    QByteArray ba = serial.readAll();
+
+    for(int i=0; i<ba.length(); i++){
+        recvStr.append((char)ba[i]);
+        if(ba[i]=='\n'){
+            processStr(recvStr);
+            recvStr.clear();
+        }
+    }
+
 }
+
+void MainWindow::appendPosToGraph(int pt)
+{
+    qreal x = chart->plotArea().width() / m_axis->tickCount();
+    int msecs = QTime::currentTime().msecsSinceStartOfDay()/1000;
+    m_x =  startRecvTime.elapsed()/10; //(m_axis->max() - m_axis->min()) / m_axis->tickCount();
+    m_y = pt;//qrand() % 8191 - 2.5;
+
+    //if(m_x > 1000){
+
+      //  chart->scroll(1, 0);
+    //}
+    //else{
+    qreal min=8192, max=0;
+    for(int i=0; i<m_series->count(); i++){
+        qreal pt = m_series->at(i).y();
+        if(pt > max)
+            max = pt;
+        if(pt < min)
+            min = pt;
+
+    }
+
+    qreal lowXrange = ((m_x-500) < 0)? 0 : (m_x-500);
+        chart->axisX()->setRange(lowXrange, m_x+100);
+        if(pt > max){
+            max = pt;
+
+        }
+        chart->axisY()->setRange(min, max);
+        //qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
+    //}
+
+
+    m_series->append(m_x, m_y);
+    if(m_series->count() > 1000){
+        m_series->removePoints(0, 100);
+    }
+}
+
 
 void MainWindow::handleTimeout()
 {
@@ -148,7 +220,7 @@ void MainWindow::handleTimeout()
       //  chart->scroll(1, 0);
     //}
     //else{
-    qreal lowXrange = ((m_x-500) < 0)? 0 : (m_x-500);
+    qreal lowXrange = ((m_x-50) < 0)? 0 : (m_x-50);
         chart->axisX()->setRange(lowXrange, m_x+100);
         qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
     //}
@@ -159,4 +231,11 @@ void MainWindow::handleTimeout()
 
     //if (m_x == 100)
     //    m_timer.stop();
+}
+
+void MainWindow::uiUpdate()
+{
+    QString msg = QString("recvd %1").arg(recvdComPacks);
+    ui->statusBar->showMessage(msg, 2000);
+    //recvdComPacks = 0;
 }
