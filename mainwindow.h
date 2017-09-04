@@ -57,6 +57,11 @@ private:
     void appendPosToGraph(int pt);
     QTime startRecvTime;
     int recvdComPacks;
+    int comPacksPerSec;
+
+    int bytesRecvd;
+    int bytesSec;
+    int lastByteSecFixTime;
 };
 
 #endif // MAINWINDOW_H

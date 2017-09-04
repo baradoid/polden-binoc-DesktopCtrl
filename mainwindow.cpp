@@ -20,7 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_x(0),
     m_y(1),
     max(0),
-    recvdComPacks(0)
+    recvdComPacks(0),
+    comPacksPerSec(0),
+    bytesSec(0),
+    lastByteSecFixTime(0)
 {
     ui->setupUi(this);
     connect(this, SIGNAL(showStatusBarMessage(QString,int)),
@@ -141,22 +144,24 @@ void MainWindow::on_pushButtonComOpen_clicked()
 
 void MainWindow::processStr(QString str)
 {
+    recvdComPacks++;
     //qDebug() << str.length() <<":" <<str;
     if(str.length() != 41){
         qDebug() << "string length " << str.length() << "not equal 41";
     }
     QStringList strList = str.split(" ");
     int xPos = strList[0].toInt(Q_NULLPTR, 16);
-    //qDebug() << xPos;
+    qDebug() << xPos;
 
     appendPosToGraph(xPos);
 
 }
 
 void MainWindow::handleReadyRead()
-{
-    recvdComPacks++;
+{    
     QByteArray ba = serial.readAll();
+
+    bytesRecvd += ba.length();
 
     for(int i=0; i<ba.length(); i++){
         recvStr.append((char)ba[i]);
@@ -196,12 +201,13 @@ void MainWindow::appendPosToGraph(int pt)
             max = pt;
 
         }
-        chart->axisY()->setRange(min, max);
+
+       // chart->axisY()->setRange(min, max);
         //qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
     //}
 
 
-    m_series->append(m_x, m_y);
+    //m_series->append(m_x, m_y);
     if(m_series->count() > 1000){
         m_series->removePoints(0, 100);
     }
@@ -235,7 +241,15 @@ void MainWindow::handleTimeout()
 
 void MainWindow::uiUpdate()
 {
-    QString msg = QString("recvd %1").arg(recvdComPacks);
+    QString msg = QString("packs/sec %1, bytes/sec %2").arg(comPacksPerSec).arg(bytesSec);
     ui->statusBar->showMessage(msg, 2000);
     //recvdComPacks = 0;
+    int msecsSinceSod = QTime::currentTime().msecsSinceStartOfDay();
+    if((msecsSinceSod - lastByteSecFixTime) >= 1000){
+        lastByteSecFixTime = msecsSinceSod;
+        bytesSec = bytesRecvd;
+        bytesRecvd = 0;
+        comPacksPerSec = recvdComPacks;
+        recvdComPacks = 0;
+    }
 }
