@@ -35,6 +35,18 @@ private slots:
     void handleReadyRead();
     void handleTimeout();
     void uiUpdate();
+    void on_pushButtonPwrOn_clicked();
+
+    void on_pushButtonPwrOff_clicked();
+
+    void on_pushButtonFanOn_clicked();
+
+    void on_pushButtonFanOff_clicked();
+
+    void on_pushButtonUsbPwrOn_clicked();
+
+    void on_pushButtonUsbPwrOff_clicked();
+
 signals:
     void showStatusBarMessage(const QString &message, int timeout = 0);
 

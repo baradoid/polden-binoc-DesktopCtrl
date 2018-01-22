@@ -53,8 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //chartView.setRenderHint(QPainter::Antialiasing);
     //ui->widgetChart->
     //ui->widgetChart->set
-    ui->widgetChartView->setChart(chart);
-    ui->widgetChartView->setRenderHint(QPainter::NonCosmeticDefaultPen);
+    //ui->widgetChartView->setChart(chart);
+    //ui->widgetChartView->setRenderHint(QPainter::NonCosmeticDefaultPen);
 
     //QObject::connect(&m_timer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
     //m_timer.setInterval(10);
@@ -70,15 +70,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_audioOn_clicked()
-{
 
-}
-
-void MainWindow::on_audioOff_clicked()
-{
-
-}
 
 void MainWindow::on_pushButton_refreshCom_clicked()
 {
@@ -147,13 +139,18 @@ void MainWindow::processStr(QString str)
     recvdComPacks++;
     //qDebug() << str.length() <<":" <<str;
     if(str.length() != 41){
-        qDebug() << "string length " << str.length() << "not equal 41";
+        qDebug() << "string length " << str.length() << "not equal 41" << qPrintable(str);
     }
     QStringList strList = str.split(" ");
-    int xPos = strList[0].toInt(Q_NULLPTR, 16);
-    qDebug() << xPos;
+    if(strList.size() > 2){
+        int xPos1 = strList[0].toInt(Q_NULLPTR, 16);
+        int xPos2 = strList[1].toInt(Q_NULLPTR, 16);
+        ui->lineEditEnc1->setText(QString::number(xPos1));
+        ui->lineEditEnc2->setText(QString::number(xPos2));
+        //qDebug() << xPos1 << xPos2;
+    }
 
-    appendPosToGraph(xPos);
+    //appendPosToGraph(xPos);
 
 }
 
@@ -251,5 +248,58 @@ void MainWindow::uiUpdate()
         bytesRecvd = 0;
         comPacksPerSec = recvdComPacks;
         recvdComPacks = 0;
+    }
+}
+
+void MainWindow::on_audioOn_clicked()
+{
+
+}
+
+void MainWindow::on_audioOff_clicked()
+{
+
+}
+
+
+void MainWindow::on_pushButtonPwrOn_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("pwrOn\n");
+    }
+}
+
+void MainWindow::on_pushButtonPwrOff_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("pwrOff\n");
+    }
+}
+
+void MainWindow::on_pushButtonFanOn_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("fanOn\n");
+    }
+}
+
+void MainWindow::on_pushButtonFanOff_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("fanOff\n");
+    }
+}
+
+void MainWindow::on_pushButtonUsbPwrOn_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("usbOn\n");
+    }
+}
+
+void MainWindow::on_pushButtonUsbPwrOff_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("usbOff\n");
     }
 }
