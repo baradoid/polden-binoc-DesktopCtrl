@@ -7,6 +7,9 @@
 #include <QtCharts/QChart>
 #include <QTime>
 
+#include <QUdpSocket>
+#include <QNetworkDatagram>
+
 namespace Ui {
 class MainWindow;
 }
@@ -46,6 +49,7 @@ private slots:
     void on_pushButtonUsbPwrOn_clicked();
 
     void on_pushButtonUsbPwrOff_clicked();
+    void readPendingDatagrams();
 
 signals:
     void showStatusBarMessage(const QString &message, int timeout = 0);
@@ -74,6 +78,8 @@ private:
     int bytesRecvd;
     int bytesSec;
     int lastByteSecFixTime;
+
+    QUdpSocket *udpSocket;
 };
 
 #endif // MAINWINDOW_H

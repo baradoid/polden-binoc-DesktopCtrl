@@ -63,6 +63,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(uiUpdate()));
     uiUpdateTimer.start();
 
+    udpSocket = new QUdpSocket(this);
+    udpSocket->bind(8059);
+
+    connect(udpSocket, SIGNAL(readyRead()),
+            this, SLOT(readPendingDatagrams()));
+
+    on_pushButton_refreshCom_clicked();
+
+
 }
 
 MainWindow::~MainWindow()
@@ -303,3 +312,13 @@ void MainWindow::on_pushButtonUsbPwrOff_clicked()
         serial.write("usbOff\n");
     }
 }
+
+void MainWindow::readPendingDatagrams()
+{
+    while (udpSocket->hasPendingDatagrams()) {
+        QNetworkDatagram datagram = udpSocket->receiveDatagram();
+        qDebug() << datagram.data();
+        processStr(QString(datagram.data()));
+    }
+}
+
