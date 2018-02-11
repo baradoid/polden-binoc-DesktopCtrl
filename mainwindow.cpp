@@ -148,14 +148,19 @@ void MainWindow::processStr(QString str)
     recvdComPacks++;
     //qDebug() << str.length() <<":" <<str;
     if(str.length() != 41){
+        str.remove("\r\n");
         qDebug() << "string length " << str.length() << "not equal 41" << qPrintable(str);
     }
     QStringList strList = str.split(" ");
     if(strList.size() > 2){
         int xPos1 = strList[0].toInt(Q_NULLPTR, 16);
         int xPos2 = strList[1].toInt(Q_NULLPTR, 16);
+        float temp = strList[2].toInt(Q_NULLPTR, 10)/10.;
+        int dist = strList[3].toInt(Q_NULLPTR, 10);
         ui->lineEditEnc1->setText(QString::number(xPos1));
         ui->lineEditEnc2->setText(QString::number(xPos2));
+        ui->lineEditRange->setText(QString::number(dist));
+        ui->lineEditTerm1->setText(QString::number(temp));
         //qDebug() << xPos1 << xPos2;
     }
 
@@ -262,12 +267,16 @@ void MainWindow::uiUpdate()
 
 void MainWindow::on_audioOn_clicked()
 {
-
+    if(serial.isOpen()){
+        serial.write("audioOn\n");
+    }
 }
 
 void MainWindow::on_audioOff_clicked()
 {
-
+    if(serial.isOpen()){
+        serial.write("audioOff\n");
+    }
 }
 
 
