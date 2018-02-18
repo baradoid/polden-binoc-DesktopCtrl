@@ -232,7 +232,7 @@
          <x>20</x>
          <y>100</y>
          <width>174</width>
-         <height>146</height>
+         <height>175</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -358,6 +358,38 @@
             <widget class="QPushButton" name="pushButtonFanOff">
              <property name="text">
               <string>Fan OFF</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_7" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="pushButtonHeatOn">
+             <property name="text">
+              <string>Heat ON</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonHeatOff">
+             <property name="text">
+              <string>Heat OFF</string>
              </property>
             </widget>
            </item>

@@ -315,6 +315,20 @@ void MainWindow::on_pushButtonUsbPwrOn_clicked()
     }
 }
 
+void MainWindow::on_pushButtonHeatOn_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("heatOn\n");
+    }
+}
+
+void MainWindow::on_pushButtonHeatOff_clicked()
+{
+    if(serial.isOpen()){
+        serial.write("heatOff\n");
+    }
+}
+
 void MainWindow::on_pushButtonUsbPwrOff_clicked()
 {
     if(serial.isOpen()){
@@ -330,4 +344,6 @@ void MainWindow::readPendingDatagrams()
         processStr(QString(datagram.data()));
     }
 }
+
+
 

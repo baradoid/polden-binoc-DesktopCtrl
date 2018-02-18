@@ -51,6 +51,10 @@ private slots:
     void on_pushButtonUsbPwrOff_clicked();
     void readPendingDatagrams();
 
+    void on_pushButtonHeatOn_clicked();
+
+    void on_pushButtonHeatOff_clicked();
+
 signals:
     void showStatusBarMessage(const QString &message, int timeout = 0);
 
