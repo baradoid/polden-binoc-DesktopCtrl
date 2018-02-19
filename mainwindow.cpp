@@ -342,7 +342,7 @@ void MainWindow::readPendingDatagrams()
 {
     while (udpSocket->hasPendingDatagrams()) {
         QNetworkDatagram datagram = udpSocket->receiveDatagram();
-        qDebug() << datagram.data();
+        //qDebug() << datagram.data();
         processStr(QString(datagram.data()));
     }
 }
