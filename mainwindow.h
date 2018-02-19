@@ -55,6 +55,12 @@ private slots:
 
     void on_pushButtonHeatOff_clicked();
 
+    void on_pushButtonRegistr_clicked();
+
+    void on_radioButtonConnCom_clicked();
+
+    void on_radioButtonConnUdp_clicked();
+
 signals:
     void showStatusBarMessage(const QString &message, int timeout = 0);
 
@@ -84,6 +90,8 @@ private:
     int lastByteSecFixTime;
 
     QUdpSocket *udpSocket;
+
+    void sendCmd(const char*);
 };
 
 #endif // MAINWINDOW_H

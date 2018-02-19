@@ -71,6 +71,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     on_pushButton_refreshCom_clicked();
 
+    if(ui->radioButtonConnCom->isChecked()){
+        ui->pushButtonRegistr->setEnabled(false);
+    }
+
+    QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
+    // You may want to use QRegularExpression for new code with Qt 5 (not mandatory).
+    QRegExp ipRegex ("^" + ipRange
+                     + "\\." + ipRange
+                     + "\\." + ipRange
+                     + "\\." + ipRange + "$");
+    QRegExpValidator *ipValidator = new QRegExpValidator(ipRegex, this);
+    ui->lineEditDstAddr->setValidator(ipValidator);
 
 }
 
@@ -266,75 +278,56 @@ void MainWindow::uiUpdate()
 }
 
 void MainWindow::on_audioOn_clicked()
-{
-    if(serial.isOpen()){
-        serial.write("audioOn\n");
-    }
+{        
+    sendCmd("audioOn\n");
 }
 
 void MainWindow::on_audioOff_clicked()
 {
-    if(serial.isOpen()){
-        serial.write("audioOff\n");
-    }
+    sendCmd("audioOff\n");
 }
-
 
 void MainWindow::on_pushButtonPwrOn_clicked()
 {
-    if(serial.isOpen()){
-        serial.write("pwrOn\n");
-    }
+    sendCmd("pwrOn\n");
 }
 
 void MainWindow::on_pushButtonPwrOff_clicked()
 {
-    if(serial.isOpen()){
-        serial.write("pwrOff\n");
-    }
+    sendCmd("pwrOff\n");
 }
 
 void MainWindow::on_pushButtonFanOn_clicked()
 {
-    if(serial.isOpen()){
-        serial.write("fanOn\n");
-    }
+    sendCmd("fanOn\n");
 }
 
 void MainWindow::on_pushButtonFanOff_clicked()
 {
-    if(serial.isOpen()){
-        serial.write("fanOff\n");
-    }
+    sendCmd("fanOff\n");
 }
 
 void MainWindow::on_pushButtonUsbPwrOn_clicked()
-{
-    if(serial.isOpen()){
-        serial.write("usbOn\n");
-    }
-}
-
-void MainWindow::on_pushButtonHeatOn_clicked()
-{
-    if(serial.isOpen()){
-        serial.write("heatOn\n");
-    }
-}
-
-void MainWindow::on_pushButtonHeatOff_clicked()
-{
-    if(serial.isOpen()){
-        serial.write("heatOff\n");
-    }
+{    
+    sendCmd("usbOn\n");
 }
 
 void MainWindow::on_pushButtonUsbPwrOff_clicked()
 {
-    if(serial.isOpen()){
-        serial.write("usbOff\n");
-    }
+    sendCmd("usbOff\n");
 }
+
+void MainWindow::on_pushButtonHeatOn_clicked()
+{
+    sendCmd("heatOn\n");
+}
+
+void MainWindow::on_pushButtonHeatOff_clicked()
+{
+    sendCmd("heatOff\n");
+}
+
+
 
 void MainWindow::readPendingDatagrams()
 {
@@ -347,3 +340,31 @@ void MainWindow::readPendingDatagrams()
 
 
 
+
+void MainWindow::on_pushButtonRegistr_clicked()
+{
+    sendCmd("reg\n");
+}
+
+
+void MainWindow::sendCmd(const char* s)
+{
+    if(ui->radioButtonConnCom->isChecked()){
+        if(serial.isOpen()){
+            serial.write("usbOff\n");
+        }
+    }
+    else if(ui->radioButtonConnUdp->isChecked()){
+        udpSocket->writeDatagram(s, QHostAddress("192.168.43.1"), 8055);
+    }
+}
+
+void MainWindow::on_radioButtonConnCom_clicked()
+{
+    ui->pushButtonRegistr->setEnabled(false);
+}
+
+void MainWindow::on_radioButtonConnUdp_clicked()
+{
+    ui->pushButtonRegistr->setEnabled(true);
+}
