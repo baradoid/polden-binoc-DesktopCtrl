@@ -9,6 +9,7 @@
 
 #include <QUdpSocket>
 #include <QNetworkDatagram>
+#include <QSettings>
 
 namespace Ui {
 class MainWindow;
@@ -92,6 +93,8 @@ private:
     QUdpSocket *udpSocket;
 
     void sendCmd(const char*);
+
+    QSettings settings;
 };
 
 #endif // MAINWINDOW_H

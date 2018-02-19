@@ -10,7 +10,6 @@
 #include <QTime>
 
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -23,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     recvdComPacks(0),
     comPacksPerSec(0),
     bytesSec(0),
-    lastByteSecFixTime(0)
+    lastByteSecFixTime(0),
+    settings("murinets", "binoControl")
 {
     ui->setupUi(this);
     connect(this, SIGNAL(showStatusBarMessage(QString,int)),
@@ -84,10 +84,19 @@ MainWindow::MainWindow(QWidget *parent) :
     QRegExpValidator *ipValidator = new QRegExpValidator(ipRegex, this);
     ui->lineEditDstAddr->setValidator(ipValidator);
 
+    ui->lineEditDstPort->setValidator(new QIntValidator(0, 65535, this));
+
+
+
+    ui->lineEditDstAddr->setText(settings.value("dst_addr", "127.0.0.1").toString());
+    ui->lineEditDstPort->setText(settings.value("dst_port", 8055).toString());
 }
 
 MainWindow::~MainWindow()
 {
+    settings.setValue("dst_addr", ui->lineEditDstAddr->text());
+    settings.setValue("dst_port", ui->lineEditDstPort->text().toInt());
+
     delete ui;
 }
 
@@ -355,8 +364,10 @@ void MainWindow::sendCmd(const char* s)
         }
     }
     else if(ui->radioButtonConnUdp->isChecked()){
-        udpSocket->writeDatagram(s, QHostAddress("192.168.43.1"), 8055);
-    }
+        QString ipStr = ui->lineEditDstAddr->text();
+        QString portStr = ui->lineEditDstPort->text();
+        udpSocket->writeDatagram(s, QHostAddress(ipStr), portStr.toInt());
+    } //"192.168.43.1"
 }
 
 void MainWindow::on_radioButtonConnCom_clicked()
