@@ -8,6 +8,7 @@
 #include <QtCharts/QSplineSeries>
 #include <QtCharts/QValueAxis>
 #include <QTime>
+#include <QtEndian>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -353,13 +354,14 @@ void MainWindow::readPendingDatagrams()
         QNetworkDatagram datagram = udpSocket->receiveDatagram();
         //qDebug() << datagram.data();
         //processStr(QString(datagram.data()));
-        if(datagram.data().length() < sizeof(CbDataUdp)){
+        if(datagram.data().length() != sizeof(CbDataUdp)){
             qWarning("udp datagram len %d less than expected data stuct %d", datagram.data().length(), sizeof(CbDataUdp));
             continue;
         }
+        QByteArray ba = datagram.data();
         CbDataUdp* cbData = (CbDataUdp*)datagram.data().constData();
-        ui->lineEditEnc1->setText(QString::number(cbData->pos1));
-        ui->lineEditEnc2->setText(QString::number(cbData->pos2));
+        ui->lineEditEnc1->setText(QString::number(qFromBigEndian(cbData->pos1)));
+        ui->lineEditEnc2->setText(QString::number(qFromBigEndian(cbData->pos2)));
         ui->lineEditRange->setText(QString::number(cbData->distance));
         ui->lineEditTerm1->setText(QString::number(cbData->headTemp));
 
