@@ -336,14 +336,33 @@ void MainWindow::on_pushButtonHeatOff_clicked()
     sendCmd("heatOff\n");
 }
 
-
+#pragma pack(push,1)
+typedef struct{
+    int16_t pos1;
+    int16_t pos2;
+    int8_t distance;
+    int8_t headTemp;
+    int8_t batteryTemp;
+    int32_t cashCount;
+} CbDataUdp;
+#pragma pack(pop)
 
 void MainWindow::readPendingDatagrams()
 {
     while (udpSocket->hasPendingDatagrams()) {
         QNetworkDatagram datagram = udpSocket->receiveDatagram();
         //qDebug() << datagram.data();
-        processStr(QString(datagram.data()));
+        //processStr(QString(datagram.data()));
+        if(datagram.data().length() < sizeof(CbDataUdp)){
+            qWarning("udp datagram len %d less than expected data stuct %d", datagram.data().length(), sizeof(CbDataUdp));
+            continue;
+        }
+        CbDataUdp* cbData = (CbDataUdp*)datagram.data().constData();
+        ui->lineEditEnc1->setText(QString::number(cbData->pos1));
+        ui->lineEditEnc2->setText(QString::number(cbData->pos2));
+        ui->lineEditRange->setText(QString::number(cbData->distance));
+        ui->lineEditTerm1->setText(QString::number(cbData->headTemp));
+
     }
 }
 
