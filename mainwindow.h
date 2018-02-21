@@ -93,6 +93,7 @@ private:
     QUdpSocket *udpSocket;
 
     void sendCmd(const char*);
+    void sendUdpCmd(const char*);
 
     QSettings settings;
 };

@@ -72,9 +72,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     on_pushButton_refreshCom_clicked();
 
-    if(ui->radioButtonConnCom->isChecked()){
-        ui->pushButtonRegistr->setEnabled(false);
-    }
+//    if(ui->radioButtonConnCom->isChecked()){
+//        ui->pushButtonRegistr->setEnabled(false);
+//    }
 
     QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
     // You may want to use QRegularExpression for new code with Qt 5 (not mandatory).
@@ -369,11 +369,9 @@ void MainWindow::readPendingDatagrams()
 }
 
 
-
-
 void MainWindow::on_pushButtonRegistr_clicked()
-{
-    sendCmd("reg\n");
+{    
+    sendUdpCmd("reg\n");
 }
 
 
@@ -385,18 +383,23 @@ void MainWindow::sendCmd(const char* s)
         }
     }
     else if(ui->radioButtonConnUdp->isChecked()){
-        QString ipStr = ui->lineEditDstAddr->text();
-        QString portStr = ui->lineEditDstPort->text();
-        udpSocket->writeDatagram(s, QHostAddress(ipStr), portStr.toInt());
+        sendUdpCmd(s);
     } //"192.168.43.1"
 }
 
 void MainWindow::on_radioButtonConnCom_clicked()
 {
-    ui->pushButtonRegistr->setEnabled(false);
+    //ui->pushButtonRegistr->setEnabled(false);
 }
 
 void MainWindow::on_radioButtonConnUdp_clicked()
 {
-    ui->pushButtonRegistr->setEnabled(true);
+    //ui->pushButtonRegistr->setEnabled(true);
+}
+
+void MainWindow::sendUdpCmd(const char* s)
+{
+    QString ipStr = ui->lineEditDstAddr->text();
+    QString portStr = ui->lineEditDstPort->text();
+    udpSocket->writeDatagram(s, QHostAddress(ipStr), portStr.toInt());
 }
