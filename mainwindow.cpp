@@ -2,11 +2,11 @@
 #include "ui_mainwindow.h"
 #include <QtSerialPort/QSerialPortInfo>
 #include <QDebug>
-#include <QtCharts/QChart>
-#include <QtCharts/QChartView>
-#include <QtCharts/QAbstractAxis>
-#include <QtCharts/QSplineSeries>
-#include <QtCharts/QValueAxis>
+//#include <QtCharts/QChart>
+//#include <QtCharts/QChartView>
+//#include <QtCharts/QAbstractAxis>
+//#include <QtCharts/QSplineSeries>
+//#include <QtCharts/QValueAxis>
 #include <QTime>
 #include <QtEndian>
 
@@ -14,8 +14,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_series(0),
-    m_axis(new QValueAxis),
+    //m_series(0),
+    //m_axis(new QValueAxis),
     m_step(0),
     m_x(0),
     m_y(1),
@@ -30,22 +30,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(showStatusBarMessage(QString,int)),
             ui->statusBar, SLOT(showMessage(QString,int)));
 
-    chart = new QChart();
-    m_series = new QLineSeries(this);
-    QPen green(Qt::red);
-    green.setWidth(1);
-    m_series->setPen(green);
-    m_series->append(m_x, m_y);
+    //chart = new QChart();
+    //m_series = new QLineSeries(this);
+//    QPen green(Qt::red);
+//    green.setWidth(1);
+//    m_series->setPen(green);
+//    m_series->append(m_x, m_y);
 
-    chart->addSeries(m_series);
-    chart->createDefaultAxes();
-    chart->setAxisX(m_axis, m_series);
-    m_axis->setTickCount(10);
-    //chart->axisX()->setRange(-100, 5);
-    chart->axisX()->setRange(0, 8191);
-    chart->axisY()->setRange(-10, 10000);
+//    chart->addSeries(m_series);
+//    chart->createDefaultAxes();
+//    chart->setAxisX(m_axis, m_series);
+//    m_axis->setTickCount(10);
+//    //chart->axisX()->setRange(-100, 5);
+//    chart->axisX()->setRange(0, 8191);
+//    chart->axisY()->setRange(-10, 10000);
 
-    chart->setTitle("xPos yPos");
+//    chart->setTitle("xPos yPos");
     //chart->setAnimationOptions(QChart::AllAnimations);
     //chart->legend()->hide();
 
@@ -206,71 +206,71 @@ void MainWindow::handleReadyRead()
 
 }
 
-void MainWindow::appendPosToGraph(int pt)
-{
-    qreal x = chart->plotArea().width() / m_axis->tickCount();
-    int msecs = QTime::currentTime().msecsSinceStartOfDay()/1000;
-    m_x =  startRecvTime.elapsed()/10; //(m_axis->max() - m_axis->min()) / m_axis->tickCount();
-    m_y = pt;//qrand() % 8191 - 2.5;
+//void MainWindow::appendPosToGraph(int pt)
+//{
+//    qreal x = chart->plotArea().width() / m_axis->tickCount();
+//    int msecs = QTime::currentTime().msecsSinceStartOfDay()/1000;
+//    m_x =  startRecvTime.elapsed()/10; //(m_axis->max() - m_axis->min()) / m_axis->tickCount();
+//    m_y = pt;//qrand() % 8191 - 2.5;
 
-    //if(m_x > 1000){
+//    //if(m_x > 1000){
 
-      //  chart->scroll(1, 0);
-    //}
-    //else{
-    qreal min=8192, max=0;
-    for(int i=0; i<m_series->count(); i++){
-        qreal pt = m_series->at(i).y();
-        if(pt > max)
-            max = pt;
-        if(pt < min)
-            min = pt;
+//      //  chart->scroll(1, 0);
+//    //}
+//    //else{
+//    qreal min=8192, max=0;
+//    for(int i=0; i<m_series->count(); i++){
+//        qreal pt = m_series->at(i).y();
+//        if(pt > max)
+//            max = pt;
+//        if(pt < min)
+//            min = pt;
 
-    }
+//    }
 
-    qreal lowXrange = ((m_x-500) < 0)? 0 : (m_x-500);
-        chart->axisX()->setRange(lowXrange, m_x+100);
-        if(pt > max){
-            max = pt;
+//    qreal lowXrange = ((m_x-500) < 0)? 0 : (m_x-500);
+//        chart->axisX()->setRange(lowXrange, m_x+100);
+//        if(pt > max){
+//            max = pt;
 
-        }
+//        }
 
-       // chart->axisY()->setRange(min, max);
-        //qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
-    //}
-
-
-    //m_series->append(m_x, m_y);
-    if(m_series->count() > 1000){
-        m_series->removePoints(0, 100);
-    }
-}
+//       // chart->axisY()->setRange(min, max);
+//        //qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
+//    //}
 
 
-void MainWindow::handleTimeout()
-{
-    qreal x = chart->plotArea().width() / m_axis->tickCount();
-    m_x +=  1; //(m_axis->max() - m_axis->min()) / m_axis->tickCount();
-    m_y +=10;//qrand() % 8191 - 2.5;
-    if(m_y > 8191)
-        m_y = 0;
-    //if(m_x > 1000){
-
-      //  chart->scroll(1, 0);
-    //}
-    //else{
-    qreal lowXrange = ((m_x-50) < 0)? 0 : (m_x-50);
-        chart->axisX()->setRange(lowXrange, m_x+100);
-        qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
-    //}
-    m_series->append(m_x, m_y);
-    //chart->scroll(x/10, 0);
-    //ui->widgetChartView->repaint();
+//    //m_series->append(m_x, m_y);
+//    if(m_series->count() > 1000){
+//        m_series->removePoints(0, 100);
+//    }
+//}
 
 
-    //if (m_x == 100)
-    //    m_timer.stop();
-}
+//void MainWindow::handleTimeout()
+//{
+//    qreal x = chart->plotArea().width() / m_axis->tickCount();
+//    m_x +=  1; //(m_axis->max() - m_axis->min()) / m_axis->tickCount();
+//    m_y +=10;//qrand() % 8191 - 2.5;
+//    if(m_y > 8191)
+//        m_y = 0;
+//    //if(m_x > 1000){
+
+//      //  chart->scroll(1, 0);
+//    //}
+//    //else{
+//    qreal lowXrange = ((m_x-50) < 0)? 0 : (m_x-50);
+//        chart->axisX()->setRange(lowXrange, m_x+100);
+//        qDebug("m_x %.1f, lowXrange %.1f", m_x, lowXrange);
+//    //}
+//    m_series->append(m_x, m_y);
+//    //chart->scroll(x/10, 0);
+//    //ui->widgetChartView->repaint();
+
+
+//    //if (m_x == 100)
+//    //    m_timer.stop();
+//}
 
 void MainWindow::uiUpdate()
 {
