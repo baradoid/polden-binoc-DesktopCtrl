@@ -379,7 +379,7 @@ void MainWindow::sendCmd(const char* s)
 {
     if(ui->radioButtonConnCom->isChecked()){
         if(serial.isOpen()){
-            serial.write("usbOff\n");
+            qInfo("sended %d", serial.write(s));
         }
     }
     else if(ui->radioButtonConnUdp->isChecked()){
