@@ -24,7 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     comPacksPerSec(0),
     bytesSec(0),
     lastByteSecFixTime(0),
-    settings("murinets", "binoControl")
+    settings("murinets", "binoControl"),
+    udpDgmCount(0)
 {
     ui->setupUi(this);
     connect(this, SIGNAL(showStatusBarMessage(QString,int)),
@@ -285,6 +286,7 @@ void MainWindow::uiUpdate()
         comPacksPerSec = recvdComPacks;
         recvdComPacks = 0;
     }
+    ui->lineEditPackCount->setText(QString::number(udpDgmCount));
 }
 
 void MainWindow::on_audioOn_clicked()
@@ -355,16 +357,16 @@ void MainWindow::readPendingDatagrams()
         //qDebug() << datagram.data();
         //processStr(QString(datagram.data()));
         if(datagram.data().length() != sizeof(CbDataUdp)){
-            qWarning("udp datagram len %d less than expected data stuct %d", datagram.data().length(), sizeof(CbDataUdp));
+            qWarning("udp datagram len %d less than expected data stuct %d: %s", datagram.data().length(), sizeof(CbDataUdp), (char*)datagram.data().constData());
             continue;
         }
         QByteArray ba = datagram.data();
         CbDataUdp* cbData = (CbDataUdp*)datagram.data().constData();
-        ui->lineEditEnc1->setText(QString::number(qFromBigEndian(cbData->pos1)));
-        ui->lineEditEnc2->setText(QString::number(qFromBigEndian(cbData->pos2)));
+        ui->lineEditEnc1->setText(QString::number(cbData->pos1));
+        ui->lineEditEnc2->setText(QString::number(cbData->pos2));
         ui->lineEditRange->setText(QString::number(cbData->distance));
         ui->lineEditTerm1->setText(QString::number(cbData->headTemp));
-
+        udpDgmCount++;
     }
 }
 

@@ -469,6 +469,19 @@
         </item>
        </layout>
       </widget>
+      <widget class="QLineEdit" name="lineEditPackCount">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>80</y>
+         <width>81</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>

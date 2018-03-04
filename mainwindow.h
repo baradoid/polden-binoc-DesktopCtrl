@@ -96,6 +96,8 @@ private:
     void sendUdpCmd(const char*);
 
     QSettings settings;
+
+    int udpDgmCount;
 };
 
 #endif // MAINWINDOW_H
