@@ -362,8 +362,8 @@ void MainWindow::readPendingDatagrams()
         }
         QByteArray ba = datagram.data();
         CbDataUdp* cbData = (CbDataUdp*)datagram.data().constData();
-        ui->lineEditEnc1->setText(QString::number(cbData->pos1));
-        ui->lineEditEnc2->setText(QString::number(cbData->pos2));
+        ui->lineEditEnc1->setText(QString::number(qFromBigEndian(cbData->pos1)));
+        ui->lineEditEnc2->setText(QString::number(qFromBigEndian(cbData->pos2)));
         ui->lineEditRange->setText(QString::number(cbData->distance));
         ui->lineEditTerm1->setText(QString::number(cbData->headTemp));
         udpDgmCount++;
