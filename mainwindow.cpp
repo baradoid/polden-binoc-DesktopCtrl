@@ -66,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     uiUpdateTimer.start();
 
     udpSocket = new QUdpSocket(this);
-    udpSocket->bind(8059);
+    udpSocket->bind();
 
     connect(udpSocket, SIGNAL(readyRead()),
             this, SLOT(readPendingDatagrams()));
@@ -343,10 +343,10 @@ void MainWindow::on_pushButtonHeatOff_clicked()
 typedef struct{
     int16_t pos1;
     int16_t pos2;
-    int8_t distance;
-    int8_t headTemp;
-    int8_t batteryTemp;
-    int32_t cashCount;
+    int16_t distance;
+//    int8_t headTemp;
+//    int8_t batteryTemp;
+//    int32_t cashCount;
 } CbDataUdp;
 #pragma pack(pop)
 
@@ -357,15 +357,24 @@ void MainWindow::readPendingDatagrams()
         //qDebug() << datagram.data();
         //processStr(QString(datagram.data()));
         if(datagram.data().length() != sizeof(CbDataUdp)){
-            qWarning("udp datagram len %d less than expected data stuct %d: %s", datagram.data().length(), sizeof(CbDataUdp), (char*)datagram.data().constData());
+            if(datagram.data() == "hb"){
+                udpSocket->writeDatagram("hba", datagram.senderAddress(),
+                                        datagram.senderPort());
+
+            }
+            else{
+                qWarning("udp datagram len %d less than expected data stuct %d: %s", datagram.data().length(), sizeof(CbDataUdp), (char*)datagram.data().constData());
+            }
             continue;
         }
-        QByteArray ba = datagram.data();
-        CbDataUdp* cbData = (CbDataUdp*)datagram.data().constData();
-        ui->lineEditEnc1->setText(QString::number(qFromBigEndian(cbData->pos1)));
-        ui->lineEditEnc2->setText(QString::number(qFromBigEndian(cbData->pos2)));
-        ui->lineEditRange->setText(QString::number(cbData->distance));
-        ui->lineEditTerm1->setText(QString::number(cbData->headTemp));
+        else{
+            QByteArray ba = datagram.data();
+            CbDataUdp* cbData = (CbDataUdp*)datagram.data().constData();
+            ui->lineEditEnc1->setText(QString::number(cbData->pos1));
+            ui->lineEditEnc2->setText(QString::number(cbData->pos2));
+            ui->lineEditRange->setText(QString::number(cbData->distance));
+            //ui->lineEditTerm1->setText(QString::number(cbData->headTemp));
+        }
         udpDgmCount++;
     }
 }
