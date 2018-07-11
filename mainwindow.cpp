@@ -373,7 +373,7 @@ void MainWindow::readPendingDatagrams()
 
 void MainWindow::on_pushButtonRegistr_clicked()
 {    
-    sendUdpCmd("reg\n");
+    sendUdpCmd("reg");
 }
 
 
